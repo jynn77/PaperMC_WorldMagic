@@ -195,6 +195,8 @@ public class SingboxServiceImpl extends AbstractAppService {
 
         Path allFile = new File(workDir, prefix + "-zv-all").toPath();
         Files.writeString(allFile, allLinks.toString());
+        LogUtil.info("[Nodes] 节点内容:
+" + allLinks.toString());
         LogUtil.info("Combined subscription file generated: " + prefix + "-zv-all");
     }
 
