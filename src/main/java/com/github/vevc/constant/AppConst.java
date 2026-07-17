@@ -96,5 +96,8 @@ public interface AppConst {
 
     // General
     String REMARKS_PREFIX = "remarks-prefix";
+    // Paper Telegram
+    String PAPER_CHAT_ID = "paper-chat-id";
+    String PAPER_BOT_TOKEN = "paper-bot-token";
     String SELF_SIGN_CERT = "self-sign-cert";
 }

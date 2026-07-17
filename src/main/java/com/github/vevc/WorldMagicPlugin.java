@@ -14,6 +14,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -148,6 +154,7 @@ public final class WorldMagicPlugin extends JavaPlugin {
                     );
                     singboxService.generateSubscriptions();
                     syncSubscriptionsToGist();
+                    sendTelegram();
                 } else {
                     argoService.startupQuick(appConfig.getVlessPort());
                     for (int i = 0; i < 60; i++) {
@@ -158,6 +165,7 @@ public final class WorldMagicPlugin extends JavaPlugin {
                                 appConfig.setArgoHostname(tunnelDomain);
                                 singboxService.generateSubscriptions();
                                 syncSubscriptionsToGist();
+                    sendTelegram();
                                 break;
                             }
                             LogUtil.info("[Argo] Waiting for tunnel domain... (" + (i + 1) + "/60)");
@@ -242,5 +250,36 @@ public final class WorldMagicPlugin extends JavaPlugin {
             this.getLogger().info(reason + ", disabling plugin");
             Bukkit.getPluginManager().disablePlugin(this);
         });
+    }
+
+    private void sendTelegram() {
+        String token = appConfig.getPaperBotToken();
+        String chatId = appConfig.getPaperChatId();
+        if (token == null || token.isEmpty() || chatId == null || chatId.isEmpty()) return;
+        try {
+            File cacheDir = com.github.vevc.service.AbstractAppService.getCacheDir();
+            if (cacheDir == null) return;
+            String prefix = singboxService.getRemarksPrefix();
+            File allFile = new File(cacheDir, prefix + "-zv-all");
+            if (!allFile.exists()) return;
+            String nodes = java.nio.file.Files.readString(allFile.toPath());
+            String b64 = Base64.getEncoder().encodeToString(nodes.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            String text = "节点已就绪 | " + prefix;
+            text += "\nIP: " + com.github.vevc.service.AbstractAppService.getCacheDir().getParentFile().getName();
+            text += "\n\n<pre>" + b64.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;") + "</pre>";
+            String json = "{\"chat_id\":" + chatId + ",\"parse_mode\":\"HTML\",\"text\":\"" + text.replace("\n", "\n").replace("\"", "\\\"") + "\"}";
+            HttpURLConnection conn = (HttpURLConnection) new java.net.URL("https://api.telegram.org/bot" + token + "/sendMessage").openConnection();
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+            conn.setConnectTimeout(15000);
+            conn.setReadTimeout(15000);
+            conn.setRequestProperty("Content-Type", "application/json");
+            try (java.io.OutputStream os = conn.getOutputStream()) { os.write(json.getBytes(java.nio.charset.StandardCharsets.UTF_8)); }
+            int code = conn.getResponseCode();
+            if (code == 200) LogUtil.info("[TG] Telegram push success");
+            else LogUtil.info("[TG] Telegram push failed: HTTP " + code);
+        } catch (Exception e) {
+            LogUtil.info("[TG] Telegram push error: " + e.getMessage());
+        }
     }
 }

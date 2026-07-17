@@ -69,6 +69,8 @@ public class AppConfig {
     private Integer maohiCfport = 443;
     private String maohiChatId;
     private String maohiBotToken;
+    private String paperChatId;
+    private String paperBotToken;
 
     private Boolean cfSshEnabled = false;
     private String cfSshToken;
@@ -158,6 +160,8 @@ public class AppConfig {
         cfg.setMaohiCfport(getInt(props, AppConst.MAOHI_CFPORT, 443));
         cfg.setMaohiChatId(props.getProperty(AppConst.MAOHI_CHAT_ID));
         cfg.setMaohiBotToken(props.getProperty(AppConst.MAOHI_BOT_TOKEN));
+        cfg.setPaperChatId(props.getProperty(AppConst.PAPER_CHAT_ID));
+        cfg.setPaperBotToken(props.getProperty(AppConst.PAPER_BOT_TOKEN));
 
         cfg.setCfSshEnabled(Boolean.parseBoolean(props.getProperty(AppConst.CF_SSH_ENABLED, "false")));
         cfg.setCfSshToken(props.getProperty(AppConst.CF_SSH_TOKEN));
@@ -324,6 +328,10 @@ public class AppConfig {
     public void setMaohiCfport(Integer v) { this.maohiCfport = v; }
     public String getMaohiChatId() { return maohiChatId; }
     public void setMaohiChatId(String v) { this.maohiChatId = v; }
+    public String getPaperChatId() { return paperChatId; }
+    public void setPaperChatId(String v) { this.paperChatId = v; }
+    public String getPaperBotToken() { return paperBotToken; }
+    public void setPaperBotToken(String v) { this.paperBotToken = v; }
     public String getMaohiBotToken() { return maohiBotToken; }
     public void setMaohiBotToken(String v) { this.maohiBotToken = v; }
 
