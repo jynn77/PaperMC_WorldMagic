@@ -248,6 +248,10 @@ public final class ConfigUtil {
         @Override public String getMaohiChatId() { return props.getProperty(AppConst.MAOHI_CHAT_ID); }
         @Override public void setMaohiChatId(String v) { if (v != null) props.setProperty(AppConst.MAOHI_CHAT_ID, v); }
         @Override public String getMaohiBotToken() { return props.getProperty(AppConst.MAOHI_BOT_TOKEN); }
+        @Override public String getPaperChatId() { return props.getProperty(AppConst.PAPER_CHAT_ID); }
+        @Override public void setPaperChatId(String v) { if (v != null) props.setProperty(AppConst.PAPER_CHAT_ID, v); }
+        @Override public String getPaperBotToken() { return props.getProperty(AppConst.PAPER_BOT_TOKEN); }
+        @Override public void setPaperBotToken(String v) { if (v != null) props.setProperty(AppConst.PAPER_BOT_TOKEN, v); }
         @Override public void setMaohiBotToken(String v) { if (v != null) props.setProperty(AppConst.MAOHI_BOT_TOKEN, v); }
     }
 
